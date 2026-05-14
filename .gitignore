@@ -1,0 +1,6 @@
+.env
+.serena/
+motion_log.jsonl
+motion_batch_*.csv
+__pycache__/
+*.py[cod]
