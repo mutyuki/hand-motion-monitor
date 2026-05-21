@@ -5,9 +5,17 @@ import sys
 from collections import defaultdict
 import socket
 from contextlib import closing  # ソケットのwith構文に必要
+from common.env import get_int, get_str, load_env_file
 
 # 集計結果を入れる辞書
 results = defaultdict(int)
+
+load_env_file()
+
+HOST = get_str("MAPREDUCE_HOST", "192.168.100.101")
+PORT = get_int("MAPREDUCE_PORT", 4000)
+BACKLOG = get_int("MAPREDUCE_BACKLOG", 10)
+BUFSIZE = get_int("MAPREDUCE_BUFSIZE", 4096)
 
 def reduce(line):
     # 入力された行をスペースで区切る
@@ -16,17 +24,12 @@ def reduce(line):
     results[key] += int(value)
 
 def main():
-    host = '192.168.100.101'
-    port = 4000
-    backlog = 10
-    bufsize = 4096
-
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     with closing(sock):
 
-        sock.bind((host, port))
-        sock.listen(backlog)
+        sock.bind((HOST, PORT))
+        sock.listen(BACKLOG)
 
         while True:
 
@@ -36,7 +39,7 @@ def main():
 
                 while True:
 
-                    msg = conn.recv(bufsize)
+                    msg = conn.recv(BUFSIZE)
 
                     if len(msg) == 0:
                         break
